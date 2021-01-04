@@ -11,14 +11,14 @@ mod report_repair {
         for (i, a) in input.iter().enumerate() {
             for (j, b) in input.iter().enumerate() {
                 if i == j {
-                    continue
+                    continue;
                 }
                 if (a + b) == 2020 {
-                    return a*b
+                    return a * b;
                 }
             }
         }
-        return 0
+        return 0;
     }
 
     pub fn solution_02(input: Vec<u32>) -> u32 {
@@ -26,17 +26,16 @@ mod report_repair {
             for (j, b) in input.iter().enumerate() {
                 for (k, c) in input.iter().enumerate() {
                     if i == j || j == k || k == i {
-                        continue
+                        continue;
                     }
-                    
+
                     if (a + b + c) == 2020 {
-                        dbg!((a,b,c));
-                        return a*b*c
+                        return a * b * c;
                     }
                 }
             }
         }
-        return 0
+        return 0;
     }
 
     pub fn transform_input(input: &str) -> Vec<u32> {
@@ -50,7 +49,7 @@ mod report_repair {
 #[cfg(test)]
 mod test {
     use super::report_repair::*;
-    
+
     #[test]
     fn test_01() {
         let input = include_str!("example_input");
