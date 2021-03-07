@@ -1,4 +1,4 @@
-use adapter_array::*;
+use seating_system::*;
 
 fn main() {
     let input = include_str!("input");
@@ -6,7 +6,7 @@ fn main() {
     println!("{:?}", solution_02(transform_input(input)));
 }
 
-mod adapter_array {
+mod seating_system {
     #[derive(Debug)]
     pub struct AdapterBag {
         adapters: Vec<u64>,
@@ -53,10 +53,6 @@ mod adapter_array {
         
         // 0 1 1 2 3 1 1 1 1
         // 0 1 2 3
-        // 0 1 1 1 2 3 1 1 1
-        // 0 2 1 2 3 1 1 1
-        // 0 1 1 1  -> 0 2 1 -> 0 1 2 -> 0 3 
-        // 0 1 1 1 1 -> 0 2 1 1 -> 0  1 2 1 -> 0 3 1 -> 0 2        
     }
 
     pub fn transform_input(input: &str) -> AdapterBag {
@@ -66,7 +62,7 @@ mod adapter_array {
 
 #[cfg(test)]
 mod test {
-    use super::adapter_array::*;
+    use super::seating_system::*;
 
     #[test]
     fn test_01() {
