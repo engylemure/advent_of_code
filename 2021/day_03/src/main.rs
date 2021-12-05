@@ -7,9 +7,8 @@ fn main() {
 }
 
 mod binary_diagnostic {
-    use std::collections::HashSet;
     use std::thread::*;
-    fn generate_basic_diagnostic(input: &Vec<Vec<char>>) -> Vec<(usize, usize)> {
+    fn generate_basic_diagnostic(input: &[Vec<char>]) -> Vec<(usize, usize)> {
         let mut diagnostic: Vec<(usize, usize)> = Vec::new();
         input[0].iter().for_each(|c| match c {
             '0' => {
@@ -45,7 +44,7 @@ mod binary_diagnostic {
                 } else {
                     acc.1 += 2usize.pow(idx as u32);
                 }
-                return acc;
+                acc
             });
         least_common * most_common
     }
