@@ -1,0 +1,29 @@
+$ cd /
+$ ls
+dir a
+dir b
+99999 01.txt
+1 02.txt
+$ cd a
+$ ls
+99997 03.txt
+$ cd ..
+$ cd b
+$ ls
+99996 04.txt
+dir c
+dir d
+dir e
+2 05.txt
+$ cd c
+$ ls
+1 06.txt
+2 07.txt
+$ cd ..
+$ cd d
+$ ls
+1 09.txt
+$ cd ..
+$ cd e
+$ ls
+99999 08.txt
