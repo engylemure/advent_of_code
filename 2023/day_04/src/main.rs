@@ -15,14 +15,13 @@ mod scratchcards {
     pub struct Card {
         id: usize,
         winning: HashSet<u32>,
-        owned: Vec<u32>,
+        owned: HashSet<u32>,
     }
 
     impl Card {
         fn matches(&self) -> usize {
-            self.owned
-                .iter()
-                .filter_map(|owned| self.winning.get(owned))
+            self.winning
+                .intersection(&self.owned)
                 .count()
         }
 
