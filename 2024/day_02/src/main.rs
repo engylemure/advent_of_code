@@ -11,7 +11,7 @@ mod red_nosed_reports {
         let mut numbers = numbers.enumerate();
         let mut prev_idx_and_number = numbers.next()?;
         let mut is_increasing = None;
-        while let Some((idx, num)) = numbers.next() {
+        for (idx, num) in numbers {
             let diff = prev_idx_and_number.1 - num;
             if diff.abs() < 1 || diff.abs() > 3 {
                 return Some(idx);
@@ -33,10 +33,8 @@ mod red_nosed_reports {
             .lines()
             .filter_map(|line| {
                 unsafe_number_idx(
-                    line.trim()
-                        .split_whitespace()
-                        .map(|num| num.parse::<i32>())
-                        .flatten()
+                    line.split_whitespace()
+                        .flat_map(|num| num.parse::<i32>())
                         .collect::<Vec<i32>>()
                         .iter(),
                 )
@@ -51,10 +49,8 @@ mod red_nosed_reports {
             .lines()
             .filter_map(|line| {
                 let numbers = line
-                    .trim()
                     .split_whitespace()
-                    .map(|num| num.parse::<i32>())
-                    .flatten()
+                    .flat_map(|num| num.parse::<i32>())
                     .collect::<Vec<i32>>();
                 if let Some(unsafe_idx) = unsafe_number_idx(numbers.iter()) {
                     let is_safe = unsafe_number_idx(
