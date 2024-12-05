@@ -48,13 +48,12 @@ mod mul_it_over {
     }
 
     pub fn solution_02(input: &str) -> u32 {
-        let mut mul_stack_str = String::new();
         let mut mul_enabled = true;
-        let mut do_stack_str = String::new();
+        let mut stack_str = String::new();
         let mut numbers_str = String::new();
         let mut numbers = Vec::new();
         for c in input.chars() {
-            match (do_stack_str.as_ref(), c) {
+            match (stack_str.as_ref(), c) {
                 ("", 'd')
                 | ("d", 'o')
                 | ("do", 'n')
@@ -62,51 +61,40 @@ mod mul_it_over {
                 | ("don'", 't')
                 | ("do", '(')
                 | ("don't", '(') => {
-                    do_stack_str.push(c);
+                    stack_str.push(c);
                 }
                 ("don't(", ')') => {
                     mul_enabled = false;
-                    do_stack_str.clear();
-                    mul_stack_str.clear();
+                    stack_str.clear();
                     numbers_str.clear();
                 }
                 ("do(", ')') => {
                     mul_enabled = true;
-                    do_stack_str.clear();
-                    mul_stack_str.clear();
+                    stack_str.clear();
                     numbers_str.clear();
                 }
-                (_, c) if mul_enabled => match (mul_stack_str.as_ref(), c) {
-                    ("", 'm') | ("m", 'u') | ("mu", 'l') | ("mul", '(') => {
-                        mul_stack_str.push(c);
-                    }
-                    ("mul(", '0'..='9') | ("mul(", ',') => {
-                        numbers_str.push(c);
-                    }
-                    ("mul(", ')') => {
-                        match numbers_str
-                            .split(',')
-                            .map(|n| n.parse::<u32>())
-                            .collect::<Result<Vec<_>, ParseIntError>>()
-                        {
-                            Ok(numbers_to_multiply) if numbers_to_multiply.len() > 1 => {
-                                numbers.push(numbers_to_multiply);
-                            }
-                            _ => {}
+                ("", 'm') | ("m", 'u') | ("mu", 'l') | ("mul", '(') if mul_enabled => {
+                    stack_str.push(c);
+                }
+                ("mul(", '0'..='9') | ("mul(", ',') if mul_enabled => {
+                    numbers_str.push(c);
+                }
+                ("mul(", ')') if mul_enabled => {
+                    match numbers_str
+                        .split(',')
+                        .map(|n| n.parse::<u32>())
+                        .collect::<Result<Vec<_>, ParseIntError>>()
+                    {
+                        Ok(numbers_to_multiply) if numbers_to_multiply.len() > 1 => {
+                            numbers.push(numbers_to_multiply);
                         }
-                        do_stack_str.clear();
-                        mul_stack_str.clear();
-                        numbers_str.clear();
+                        _ => {}
                     }
-                    _ => {
-                        do_stack_str.clear();
-                        mul_stack_str.clear();
-                        numbers_str.clear();
-                    }
-                },
+                    stack_str.clear();
+                    numbers_str.clear();
+                }
                 _ => {
-                    do_stack_str.clear();
-                    mul_stack_str.clear();
+                    stack_str.clear();
                     numbers_str.clear();
                 }
             }
