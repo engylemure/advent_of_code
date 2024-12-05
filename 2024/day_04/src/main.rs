@@ -18,60 +18,45 @@ mod ceres_search {
     }
 
     fn search_xmas(map: &[Vec<char>]) -> u32 {
-        let horizontal_xmas = map
-            .iter()
-            .enumerate()
-            .flat_map(|(i, line)| {
-                line.windows(4)
-                    .enumerate()
-                    .map(move |(j, chars)| ((std::iter::repeat(i)).zip(j..j + 4), chars))
-            })
-            .filter_map(|(indices, chars)| is_xmas(chars).then_some(indices));
-        let vertical_xmas = map
-            .windows(4)
-            .enumerate()
-            .flat_map(|(i, lines)| {
-                (0..lines[0].len()).map(move |j| {
-                    (
-                        (i..i + 4).zip(std::iter::repeat(j)),
-                        [lines[0][j], lines[1][j], lines[2][j], lines[3][j]],
-                    )
-                })
-            })
-            .filter_map(|(indices, chars)| is_xmas(&chars).then_some(indices));
-        let diagonal_xmas = map
-            .windows(4)
-            .enumerate()
-            .flat_map(|(i, lines)| {
-                (0..(lines[0].len() - 3))
-                    .map(move |j| {
-                        (
-                            Box::new((i..(i + 4)).zip(j..=(j + 3)))
-                                as Box<dyn Iterator<Item = (usize, usize)>>,
-                            [
-                                lines[0][j],
-                                lines[1][j + 1],
-                                lines[2][j + 2],
-                                lines[3][j + 3],
-                            ],
-                        )
+        let height = map.len();
+        let width = map[0].len();
+        let mut horizontal = 0;
+        let mut vertical = 0;
+        let mut diagonal = 0;
+        for i in 0..height {
+            horizontal += &map[i]
+                .windows(4)
+                .filter_map(|chars| is_xmas(chars).then_some(()))
+                .count();
+            if i <= height - 4 {
+                vertical += (0..width)
+                    .filter_map(|j| {
+                        is_xmas(&[map[i][j], map[i + 1][j], map[i + 2][j], map[i + 3][j]])
+                            .then_some(())
                     })
-                    .chain((3..lines[0].len()).map(move |j| {
-                        (
-                            Box::new((i..(i + 4)).rev().zip(j - 3..=j))
-                                as Box<dyn Iterator<Item = (usize, usize)>>,
-                            [
-                                lines[3][j - 3],
-                                lines[2][j - 2],
-                                lines[1][j - 1],
-                                lines[0][j],
-                            ],
-                        )
+                    .count();
+                diagonal += (0..width - 3)
+                    .map(|j| {
+                        [
+                            map[i][j],
+                            map[i + 1][j + 1],
+                            map[i + 2][j + 2],
+                            map[i + 3][j + 3],
+                        ]
+                    })
+                    .chain((3..width).map(|j| {
+                        [
+                            map[i + 3][j - 3],
+                            map[i + 2][j - 2],
+                            map[i + 1][j - 1],
+                            map[i][j],
+                        ]
                     }))
-            })
-            .filter_map(|(indices, chars)| is_xmas(&chars).then_some(indices));
-        (dbg!(horizontal_xmas.count()) + dbg!(vertical_xmas.count()) + dbg!(diagonal_xmas.count()))
-            as u32
+                    .filter_map(|chars| is_xmas(&chars).then_some(()))
+                    .count();
+            }
+        }
+        (horizontal + vertical + diagonal) as u32
     }
 
     fn search_xmas_two(map: &[Vec<char>]) -> u32 {
