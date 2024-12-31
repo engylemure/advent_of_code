@@ -7,6 +7,8 @@ fn main() {
 }
 
 mod bridge_repair {
+    use rayon::iter::{IntoParallelIterator, IntoParallelRefIterator, ParallelIterator};
+
     fn parse(input: &str) -> impl Iterator<Item = (u64, Vec<u64>)> + use<'_> {
         input.lines().filter_map(|line: &str| {
             let mut parts = line.trim().split(':');
@@ -40,7 +42,7 @@ mod bridge_repair {
                         )
                     })
                     .any(|operation_sum| operation_sum == sum)
-                    .then(|| sum)
+                    .then_some(sum)
             })
             .sum()
     }
@@ -58,9 +60,9 @@ mod bridge_repair {
             .map(|_| ops.to_vec())
             .fold(vec![vec![]], |result, pool| {
                 result
-                    .into_iter()
+                    .into_par_iter()
                     .flat_map(|x| {
-                        pool.iter()
+                        pool.par_iter()
                             .map(|y| {
                                 let mut res = x.clone();
                                 res.push(*y);
@@ -76,7 +78,7 @@ mod bridge_repair {
         parse(input)
             .filter_map(|(sum, numbers)| {
                 operations(numbers.len() - 1)
-                    .into_iter()
+                    .into_par_iter()
                     .filter_map(|ops| {
                         let mut numbers_iter = numbers.iter();
                         ops.into_iter()
@@ -93,7 +95,7 @@ mod bridge_repair {
                             })
                     })
                     .any(|op_sum| op_sum == sum)
-                    .then(|| sum)
+                    .then_some(sum)
             })
             .sum()
     }
@@ -124,6 +126,13 @@ mod test {
 
     #[test]
     fn test_03() {
-        dbg!(operations(2));
+        assert_eq!(
+            operations(1),
+            vec![
+                vec![Operation::Sum],
+                vec![Operation::Product],
+                vec![Operation::Concat]
+            ]
+        );
     }
 }
