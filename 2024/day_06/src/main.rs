@@ -63,10 +63,17 @@ mod guard_guallivant {
     fn is_loop_with_obstacle(
         mut map: Vec<Vec<char>>,
         mut already_traversed: Vec<(char, usize, usize)>,
-    ) -> Option<(usize, usize)> {
+    ) -> (bool, (usize, usize)) {
         let obstacle_pos = already_traversed.pop().unwrap();
-        // dbg!(already_traversed.len());
         map[obstacle_pos.1][obstacle_pos.2] = 'O';
+        let already_visited_points = already_traversed
+            .iter()
+            .cloned()
+            .map(|(_, i, j)| (i, j))
+            .collect::<HashSet<_>>();
+        if already_visited_points.contains(&(obstacle_pos.1, obstacle_pos.2)) {
+            return (false, (obstacle_pos.1, obstacle_pos.2));
+        }
         let mut position = already_traversed.pop();
         let mut visited: HashSet<(char, usize, usize)> = already_traversed.into_iter().collect();
         let mut is_loop = false;
@@ -78,16 +85,7 @@ mod guard_guallivant {
             visited.insert(p);
             position = move_01(&mut map, p);
         }
-        if is_loop {
-            println!(
-                "{}\n",
-                map.into_iter()
-                    .map(|v| v.into_iter().collect::<String>())
-                    .collect::<Vec<_>>()
-                    .join("\n")
-            );
-        }
-        is_loop.then_some((obstacle_pos.1, obstacle_pos.2))
+        (is_loop, (obstacle_pos.1, obstacle_pos.2))
     }
 
     pub fn solution_02(input: &str) -> u32 {
@@ -115,10 +113,9 @@ mod guard_guallivant {
             position = move_01(&mut map, p);
         }
         (2..route.len())
-            // .into_par_iter()
-            .filter_map(|i| is_loop_with_obstacle(map.clone(), route[..=i].to_vec()))
-            .collect::<HashSet<_>>()
-            .len() as u32
+            .into_par_iter()
+            .filter(|i| is_loop_with_obstacle(map.clone(), route[..=*i].to_vec()).0)
+            .count() as u32
     }
 }
 
